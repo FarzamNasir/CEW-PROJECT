@@ -1,4 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <curl/curl.h>
+#include <jansson.h>
 
+// Callback function to handle received data
+size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
+    size_t realsize = size * nmemb;
+    char *data = (char *)userp;
+
+    // Append received data to the user buffer
+    memcpy(data, contents, realsize);
+
+    // Add null terminator to properly terminate the string
+    data[realsize] = '\0';
+
+    return realsize;
+}
 
 
 
