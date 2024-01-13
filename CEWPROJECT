@@ -45,7 +45,36 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
         json_t *wind_direction = json_object_get(json_object_get(root, "current"), "wind_direction_10m");
         json_t *surface_pressure = json_object_get(json_object_get(root, "current"), "surface_pressure");
         json_t *sealevel_pressure = json_object_get(json_object_get(root, "current"), "pressure_msl");
+        // Save processed data to "processed_data"
+    	FILE *processed_data_file = fopen("processed_data.json", "a"); // Use "a" for append mode
+        if (processed_data_file != NULL) {
+            fprintf(processed_data_file, "- - - - - - - - - - - - - Processed Data - - - - - - - - - - - - -\n");
+            fprintf(processed_data_file,"Report Generated on: %s\n", formatted_time);
+            fprintf(processed_data_file, "Temperature: %.2f°C\n", json_real_value(temperature));
+            //fprintf(processed_data_file, "Humidity: %.2f%%\n", json_real_value(humidity));
+            fprintf(processed_data_file, "Wind Speed(10m): %.2f km/h\n", json_real_value(wind_speed));
+            fprintf(processed_data_file,"Wind Direction(10m): %.2f °\n", json_real_value(wind_direction));
+            fprintf(processed_data_file,"Surface Pressure: %.2f hPa\n", json_real_value(surface_pressure));
+            fprintf(processed_data_file,"Sealevel Pressure: %.2f hPa\n\n", json_real_value(sealevel_pressure));
+            fclose(processed_data_file);
+        } else {
+            fprintf(stderr, "Failed to open processed_data.txt for writing.\n");
+        }
         
+   
+        // Print the processed values
+   	printf("---------------------------------------------------------------\n");
+    	printf("                     Weather Report                            \n");
+    	printf("---------------------------------------------------------------\n");
+	printf("Report Generated on: %s\n", formatted_time);
+	printf("Temperature: %.2f°C\n", json_real_value(temperature));
+        //printf("Humidity: %.2f%%\n", json_real_value(humidity));
+        printf("Wind Speed(10m): %.2f km/h\n", json_real_value(wind_speed));
+        printf("Wind Direction(10m): %.2f °\n", json_real_value(wind_direction));
+        printf("Surface Pressure: %.2f hPa\n", json_real_value(surface_pressure));
+        printf("Sealevel Pressure: %.2f hPa\n", json_real_value(sealevel_pressure));
+
+
 
 
 
