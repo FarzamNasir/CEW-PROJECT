@@ -217,6 +217,21 @@ int main() {
         json_t *wind_direction = json_object_get(json_object_get(root, "current"), "wind_direction_10m");
         json_t *surface_pressure = json_object_get(json_object_get(root, "current"), "surface_pressure");
         json_t *sealevel_pressure = json_object_get(json_object_get(root, "current"), "pressure_msl");
+        
+	char formatted_time[50];
+    	getCurrentFormattedTime(formatted_time, sizeof(formatted_time));
+    	
+	Handling();
+	
+	FILE *temp_file = fopen("Temp.json", "a");
+    	if (temp_file != NULL) {
+    		//fseek(temp_file, 0, SEEK_END);
+        	fprintf(temp_file, "%.2f\n", json_real_value(temperature));
+        	fclose(temp_file);	
+    	} else {
+        	fprintf(stderr, "Failed to open Temp.txt for writing.\n");
+    	}
+
         // Save processed data to "processed_data"
     	FILE *processed_data_file = fopen("processed_data.json", "a"); // Use "a" for append mode
         if (processed_data_file != NULL) {
