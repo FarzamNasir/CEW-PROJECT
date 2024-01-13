@@ -74,7 +74,74 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
         printf("Surface Pressure: %.2f hPa\n", json_real_value(surface_pressure));
         printf("Sealevel Pressure: %.2f hPa\n", json_real_value(sealevel_pressure));
 
+		// Inside your main function after printing processed data
 
+	// Define thresholds for temperature, humidity, and wind speed
+	const float TEMP_THRESHOLD = 10.0; // Example threshold for temperature
+	//const float HUMIDITY_THRESHOLD = 70.0; // Example threshold for humidity
+	const float WIND_SPEED_THRESHOLD = 10.0; // Example threshold for wind speed
+
+	// Check for anomalies
+if (json_real_value(temperature) > TEMP_THRESHOLD) {
+    printf("Alert: High Temperature Detected!\n");
+
+    // Send notification
+    char notify_command[256];
+    snprintf(notify_command, sizeof(notify_command), "notify-send 'High Temperature Alert' 'Temperature is above threshold: %.2f°C'", json_real_value(temperature));
+    system(notify_command);
+
+    // Send email with corrected authentication, content, and enhanced security
+	    char email_command[1024];
+	snprintf(email_command, sizeof(email_command),
+	    "echo -e 'From: farzamnasir16@gmail.com\nTo:farzamnasir16@gmail.com\nSubject: High Temperature Alert\n\n Temperature is above threshold: %.2f°C' | "
+	    "curl --ssl-reqd --url 'smtps://smtp.gmail.com:465' "
+	    "-u 'farzamnasir16@gmail.com:sgvt ntje kgdm lisw' "  // Added space after the colon
+	    "--mail-from 'farzamnasir16@gmail.com' "
+	    "--mail-rcpt 'farzamnasir16@gmail.com' "
+	    "--upload-file -", // Remove --upload-file option
+	    json_real_value(temperature));
+	system(email_command);
+}
+	
+
+	//if (json_real_value(humidity) > HUMIDITY_THRESHOLD) {
+	 //   printf("Alert: High Humidity Detected!\n");
+	//}
+
+			
+
+
+	if (json_real_value(wind_speed) > WIND_SPEED_THRESHOLD) {
+	    printf("Alert: High Wind Speed Detected!\n");
+		    char notify_command[256];
+	    snprintf(notify_command, sizeof(notify_command), "notify-send 'High Wind Speed Alert' 'Wind Speed is above threshold: %.2fkm/h'", json_real_value(wind_speed));
+	    system(notify_command);
+
+	    // Send email with corrected authentication, content, and enhanced security
+		    char email_command[1024];
+		snprintf(email_command, sizeof(email_command),
+		    "echo -e 'From: farzamnasir16@gmail.com\nTo:farzamnasir16@gmail.com\nSubject: High Wind Speed Alert\n\n Wind Speed is above threshold: %.2fkm/h' | "
+		    "curl --ssl-reqd --url 'smtps://smtp.gmail.com:465' "
+		    "-u 'farzamnasir16@gmail.com:sgvt ntje kgdm lisw' "  // Added space after the colon
+		    "--mail-from 'farzamnasir16@gmail.com' "
+		    "--mail-rcpt 'farzamnasir16@gmail.com' "
+		    "--upload-file -", // Remove --upload-file option
+		    json_real_value(wind_speed));
+		system(email_command);
+	}
+
+   
+
+        // Cleanup
+        json_decref(root);
+        curl_easy_cleanup(curl);
+    }
+
+    // Cleanup libcurl
+    curl_global_cleanup();
+
+    return 0;
+}
 
 
 
