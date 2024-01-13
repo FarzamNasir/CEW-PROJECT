@@ -18,6 +18,36 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
 
     return realsize;
 }
+
+int main() {
+    CURL *curl;
+    CURLcode res;
+
+    // Initialize libcurl
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    // Create a curl handle
+    curl = curl_easy_init();
+    if (curl) {
+        // Set the URL
+        const char *url = "https://api.open-meteo.com/v1/forecast?latitude=24.923551&longitude=67.133765&current=temperature_2m,relative_humidity_2m,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=1";
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+
+        // Set the callback function to handle the received data
+        char response_data[4096]; // Adjust the buffer size accordingly
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response_data);
+
+        // Perform the HTTP request
+        res = curl_easy_perform(curl);
+
+        // Check for errors
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+            curl_easy_cleanup(curl);
+            curl_global_cleanup();
+            return 1;
+        }
         // Save raw data to "raw_data.json"
         FILE *raw_data_file = fopen("raw_data.json", "a"); // Use "a" for append mode
         if (raw_data_file != NULL) {
