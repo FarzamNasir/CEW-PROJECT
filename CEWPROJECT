@@ -19,6 +19,148 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
     return realsize;
 }
 
+// Function to get and format the current time
+void getCurrentFormattedTime(char formatted_time[50], size_t size) {
+    time_t current_time = time(NULL);
+    struct tm *local_time = localtime(&current_time);
+
+    strftime(formatted_time, size, "%d/%b/%Y\nTime: %H:%M:%S", local_time);
+}
+
+
+   	int Handling() {
+   	
+    time_t now;
+    struct tm *local_time;
+
+    // Get current time
+    now = time(NULL);
+    local_time = localtime(&now); // Obtain local time components
+    
+    char formatted_time[50];
+    getCurrentFormattedTime(formatted_time, sizeof(formatted_time));
+
+    // Check if it's Monday
+    if (local_time->tm_wday == 1) {
+    
+    FILE *Report_file = fopen("Report_Handling.txt", "r+");
+    if (Report_file == NULL) {
+        perror("Error opening Report_Handling.txt");
+        return 1;
+    }
+
+    int ch;
+    // Process the first line
+    while ((ch = fgetc(Report_file)) != EOF && ch != '\n') {
+        if (ch == '0') {
+        // Delete the contents of "Temp.json"
+            FILE *TempFile = fopen("Temp.json", "w");
+            if (TempFile == NULL) {
+                perror("Error opening Temp.json");
+                fclose(Report_file);
+                return 1;
+            }
+            fclose(TempFile);
+            fseek(Report_file, -1, SEEK_CUR);
+            fputc('1', Report_file);
+            break;
+        }
+    }
+
+    // Move to the beginning of the second line
+    while ((ch = fgetc(Report_file)) != EOF && ch != '\n');
+
+    // Process the second line
+    while ((ch = fgetc(Report_file)) != EOF && ch != '\n') {
+        if (ch == '1') {
+            fseek(Report_file, -1, SEEK_CUR);
+            fputc('0', Report_file);
+            break;
+        }
+    }
+
+    fclose(Report_file);
+    }if (local_time->tm_wday == 6){ //check's sunday
+    
+    
+    FILE *Report_file = fopen("Report_Handling.txt", "r+");
+    if (Report_file == NULL) {
+        perror("Error opening Report_Handling.txt");
+        return 1;
+    }
+
+    int ch;
+    // Process the first line
+    while ((ch = fgetc(Report_file)) != EOF && ch != '\n') {
+        if (ch == '1') {
+            fseek(Report_file, -1, SEEK_CUR);
+            fputc('0', Report_file);
+            break;
+        }
+    }
+
+    // Move to the beginning of the second line
+    while ((ch = fgetc(Report_file)) != EOF && ch != '\n');
+
+    // Process the second line
+    while ((ch = fgetc(Report_file)) != EOF && ch != '\n') {
+        if (ch == '0') {
+        fseek(Report_file, -1, SEEK_CUR);
+        fputc('1', Report_file);
+        
+            FILE *temp_file_read = fopen("Temp.json", "r");
+	if (temp_file_read != NULL) {
+	    double sum = 0.0;
+	    int count = 0;
+	    double temperature;
+
+	    // Read temperatures from the file and calculate sum
+	    while (fscanf(temp_file_read, "%lf\n", &temperature) == 1) {
+		sum += temperature;
+		count++;
+	    }
+
+	    fclose(temp_file_read);
+
+	    if (count > 0) {// 'w' use krrhe cz hr baar next week mai uski report generate krni
+		double mean = sum / count;
+		//printf("Sum of temperatures: %.2f\n", sum);
+		//printf("Mean temperature: %.2f\n", mean);
+		  FILE *Weekly_Report_file = fopen("Weekly_Weather_Report.txt", "w"); // Add .txt extension
+			if (Weekly_Report_file != NULL) {
+			    fprintf(Weekly_Report_file, "Report Generated on: %s\n", formatted_time);
+			    fprintf(Weekly_Report_file, "Mean temperature: %.2f\n", mean);
+			    fclose(Weekly_Report_file);
+			} else {
+			    fprintf(stderr, "Failed to open Weekly_Weather_Report.txt for writing.\n");
+			}
+
+
+		//exit after report
+		return 0;
+	    } else {
+		printf("No temperature values found in the file.\n");
+	    }
+} else {
+    fprintf(stderr, "Failed to open Temp.json for reading.\n");
+}
+        
+        
+            //fseek(Report_file, -1, SEEK_CUR);
+            //fputc('1', Report_file);
+            break;
+        }else {
+        printf("Report has been already generated. \nCheck the Weekly Report file on your desktop.\n");
+        break;
+        }
+    }
+
+    fclose(Report_file);
+    
+    
+    }
+}
+
 int main() {
     CURL *curl;
     CURLcode res;
