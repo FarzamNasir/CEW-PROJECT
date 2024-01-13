@@ -1,0 +1,13 @@
+READ ME FILES
+
+this text documents explains what the purpose of the various files are.
+
+cew.c: contains c code for the weather monitoring system
+processed_data.json : contains the parced values from the api
+raw_data.json: contains the raw data fetched from the api
+Report_Handling: (.)contains variables to assist in generating a weekly report.
+                 (.)first variable in the first line is used to delete the past weeks report on monday so sthat the new report can be generated.
+                 (.)second variable in the second line is to check if the report has been generated or not.
+Shell_Script.sh: contains the script for automating the code after a sleep interval.
+Temp.json:contains only temperature values to help in calculating mean to print in weekly report
+Weekly_Weather_Report: contains the mean value of temperature for a week.
