@@ -18,6 +18,34 @@ size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
 
     return realsize;
 }
+        // Save raw data to "raw_data.json"
+        FILE *raw_data_file = fopen("raw_data.json", "a"); // Use "a" for append mode
+        if (raw_data_file != NULL) {
+            fprintf(raw_data_file, "%s\n\n\n", response_data);
+            fclose(raw_data_file);
+        } else {
+            fprintf(stderr, "Failed to open raw_data.json for writing.\n");
+        }
+
+        // Parse JSON data
+        json_t *root;
+        json_error_t error;
+        root = json_loads(response_data, 0, &error);
+        if (!root) {
+            fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
+            curl_easy_cleanup(curl);
+            curl_global_cleanup();
+            return 1;
+        }
+
+        // Access temperature, humidity, and wind_speed values
+        json_t *temperature = json_object_get(json_object_get(root, "current"), "temperature_2m");
+        //json_t *humidity = json_object_get(json_object_get(root, "current"), "relative_humidity_2m");
+        json_t *wind_speed = json_object_get(json_object_get(root, "current"), "wind_speed_10m");
+        json_t *wind_direction = json_object_get(json_object_get(root, "current"), "wind_direction_10m");
+        json_t *surface_pressure = json_object_get(json_object_get(root, "current"), "surface_pressure");
+        json_t *sealevel_pressure = json_object_get(json_object_get(root, "current"), "pressure_msl");
+        
 
 
 
